@@ -214,7 +214,7 @@ function change_product_field_product_type( $column, $postid ) {
 add_action('admin_bar_menu', 'admin_add_toolbar_items', 98);
 function admin_add_toolbar_items( $admin_bar ) {
 
-    if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+    if ( ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
         
         $admin_bar->add_menu( array(
             'id'    => 'testwork-401-admin-bar-item',
@@ -336,7 +336,7 @@ function render_admin_menu_page_html() {
 
             <div class="custom-item-field">
                 <button type="button" id="clear_product_custom_fields_btn">&#10005; Очистить</button>
-                <button type="submit" id="create_product_custom_fields_btn">&#10003; Сохранить</button>
+                <button type="submit" name="save" id="publish" class="new-submit-button">&#10003; Сохранить</button>
             </div>
         </div>
     </form>
