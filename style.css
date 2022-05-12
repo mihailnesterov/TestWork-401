@@ -10,3 +10,136 @@ License: GNU General Public License v2 or later
 License URI: LICENSE
 Text Domain: testwork-401
 */
+
+ul.products {
+    display: grid;
+    grid-template-columns: repeat( 1, 1fr 1fr 1fr 1fr );
+    grid-column-gap: 3rem;
+    grid-row-gap: 3rem;
+}
+
+ul.products li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f9f9f9;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+ul.products::before, ul.products::after {
+    content: unset;
+    display: unset;
+}
+
+ul.products li:nth-child(1) {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    background-color: #0f4361;    
+}
+
+ul.products li:nth-child(2) {
+    grid-column-start:4;
+    grid-column-end: 4;
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+
+ul.products li:nth-child(3) {
+    grid-column-start: 4;
+    grid-column-end: 4;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+ul.products li > *:first-child {
+    flex-grow: 1;
+}
+
+ul.products li > *:last-child {
+    margin-bottom: 2rem !important;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+ul.products li:first-child > *:last-child {
+    margin-bottom: 3rem !important;
+}
+
+ul.products li:first-child > *:last-child.button {
+    background-color: cornflowerblue !important;
+    color: #fff;
+    padding: 1.25rem 2.5rem;
+    font-size: 18px;
+}
+
+ul.products li:first-child > *:last-child.button:before {
+    content: "\2714";
+    font-size: 1em;
+    margin-right: 10px;
+    color: #9bd1a3;
+}
+
+ul.products li h2 {
+    padding: 1rem;
+}
+
+ul.products li .button {
+    line-height: 1.2;
+}
+
+ul.products li:nth-child(1) h2 {
+    padding: 2rem;
+    font-size: 48px !important;
+    font-weight: 600 !important;
+    color: #fff;
+}
+
+ul.products li img {
+    object-fit: cover;
+    height: 180px;
+    width: 100%;
+}
+
+ul.products li img:hover {
+    opacity: 0.85;
+}
+
+ul.products li:nth-child(1) img {
+    height: 60%;
+}
+
+ul.products li:nth-child(1) .price  {
+    font-size: 42px !important;
+    font-weight: 300;
+    color: darkkhaki
+}
+
+ul.product li .custom-type {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+ul.products li:first-child .custom-type {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.product .custom-type b {
+    background-color: cornflowerblue;
+    color: #fff;
+    padding: 0.2rem 0.4rem;
+    border-radius: 30px;
+}
+
+body.woocommerce #primary,
+body.woocommerce-cart #primary,
+body.woocommerce-checkout #primary,
+body.woocommerce-account #primary {
+	float: none;
+	width: 100%;
+}
