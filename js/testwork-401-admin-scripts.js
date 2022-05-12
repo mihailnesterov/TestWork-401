@@ -11,7 +11,7 @@
     const wcRegularPrice = document.querySelector('#_regular_price');
     const clearFieldsBtn = document.querySelector('#clear_product_custom_fields_btn');
     const publishingAction = document.querySelector('#publishing-action');
-    const saveBtn = document.querySelector('input[type="submit"][name="save"]#publish');
+    const saveBtn = document.querySelector('input[type="submit"][name="save"]#publish' || 'button[type="submit"][name="save"]#publish');
 
     const product_id = product.id;
 
@@ -44,9 +44,41 @@
     }
 
     /**
+     * Сохранение товара
+     */
+    if( saveBtn ) {
+
+        /**
+         * Сохраняем товар ajax-запросом
+         */
+         saveBtn.addEventListener('click', () => {
+            
+            jQuery.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'save_new_product',
+                    product_id
+                },
+                success(res) {
+                    image.src = "";
+                    image.style.display = 'none';
+                    removeImageBtn.style.display = 'none';
+                    uploadImageBtn.style.display = 'block';
+                    alert('Товар добавлен');
+                },
+                error(error) {
+                    console.log(`Ajax error save new product: ${JSON.stringify(error)}`);
+                }
+            });
+            
+        });
+    }
+
+    /**
      * Удаление картинки
      */
-    if( removeImageBtn ) {
+     if( removeImageBtn ) {
 
         if( image.src === "" ) { 
             removeImageBtn.style.display = 'none';
@@ -101,8 +133,11 @@
 
             if( productPrice ) {
                 productPrice.value = '';
-                wcRegularPrice.value = '';
             }
+
+            if( wcRegularPrice) {
+                wcRegularPrice.value = ''; 
+             }
 
             if( productDate ) {
                 productDate.value = '';
@@ -122,9 +157,9 @@
     /**
      * Добавить свою кнопку submit (удалить основную)
      */
-    if( form && saveBtn && publishingAction ) {
+    if( form && saveBtn ) {
         
-        saveBtn.remove();
+        //saveBtn.remove();
         
         const newSubmitButton = document.createElement('button');
         
@@ -134,7 +169,10 @@
         
         publishingAction.appendChild(newSubmitButton);
         
-        form.addEventListener('submit', () => {
+        form.addEventListener('submit', e => {
+            if( !publishingAction ) {
+                e.preventDefault();
+            }
             const spinner = publishingAction.querySelector('.spinner');
             spinner.style.visibility = 'visible';
         });
