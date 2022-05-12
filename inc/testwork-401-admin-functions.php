@@ -5,9 +5,7 @@
  */
 add_action('woocommerce_product_options_general_product_data', 'testwork_401_generate_html');
 function testwork_401_generate_html() { 
-
     $image = get_post_meta( get_the_ID(), 'testwork_401_custom_product_image', true );
-    
     ?>
 
     <div class="options_group testwork-401-fields">
@@ -29,7 +27,6 @@ function testwork_401_generate_html() {
             <figure>
                 <img 
                     id="custom_product_image" 
-                    data-id="<?= get_the_ID() ?>"
                     src="<?= esc_attr($image) ?>" 
                     alt="Добавить картинку товара" 
                     style="display: <?= $image === "" ? 'none' : 'block' ?>"
@@ -188,4 +185,160 @@ function testwork_401_add_product_scripts() {
 			'id' => get_the_ID()
 		)
 	);
+}
+
+/**
+ * Добавить колонку "Тип" в таблицу товаров
+ */
+add_filter( 'manage_edit-product_columns', 'change_product_columns_filter',10, 1 );
+function change_product_columns_filter( $columns ) {
+    array_splice( $columns, 4, 0, array( 'testwork_401_product_type' => __( 'Тип', 'textdomain' ) ) ) ;
+return $columns;
+}
+
+/**
+ * Добавить значения типов в таблицу товаров
+ */
+add_action( 'manage_product_posts_custom_column', 'change_product_field_product_type', 10, 2 );
+function change_product_field_product_type( $column, $postid ) {
+    if ( $column == 'testwork_401_product_type' ) {
+        $product_type = get_post_meta( $postid, 'testwork_401_product_type', true ); ?>
+            <span><?= $product_type ? esc_html($product_type) : '-' ?></span>
+        <?php
+    }
+}
+
+/**
+ * Добавить ссылку "Создать товар" в toolbar
+ */
+add_action('admin_bar_menu', 'admin_add_toolbar_items', 98);
+function admin_add_toolbar_items( $admin_bar ) {
+
+    if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+        
+        $admin_bar->add_menu( array(
+            'id'    => 'testwork-401-admin-bar-item',
+            'title' => __( 'Создать товар', 'textdomain' ),
+            'href'  => get_dashboard_url() . 'edit.php?post_type=product&page=testwork-401-create-product',
+        ));
+    }
+}
+
+/**
+ * Добавить ссылку на страницу создания товара
+ */
+add_action('admin_menu', 'add_admin_menu_page' );
+function add_admin_menu_page() {
+    add_submenu_page(
+        'edit.php?post_type=product',
+        'Создать товар', 
+        'Создать', 
+        'manage_options', 
+        'testwork-401-create-product', 
+        'render_admin_menu_page_html',
+        1
+    );
+}
+/**
+ * Вывод формы на страницу товара
+ */
+function render_admin_menu_page_html() {
+    if ( get_current_screen()->id !== 'product_page_testwork-401-create-product' ) return;
+    ?>
+    <form name="post" action="edit.php?post_type=product" method="post" id="post" enctype="multipart/form-data">
+        <div class="options_group testwork-401-fields">
+            <h1>TestWork 401 создать товар...</h1>
+            <hr />
+            
+            <div class="custom-item-field">
+                <label for="testwork_401_product_title">Название товара</label>
+                <input 
+                    id="testwork_401_product_title" 
+                    name="testwork_401_product_title"
+                    type="text"
+                    class="short input"
+                    required
+                />
+            </div>
+            
+            <div class="custom-image-field custom-item-field">
+                <p>Картинка товара</p>
+                <figure>
+                    <img 
+                        id="custom_product_image" 
+                        src="" 
+                        alt="Добавить картинку товара" 
+                        style="display: none"
+                    />
+
+                    <button 
+                        id="upload_custom_product_image"
+                        type="button" 
+                        title="Загрузить картинку"
+                        style="display: block"
+                    >&plus;</button>
+
+                    <button 
+                        id="remove_custom_product_image"
+                        type="button" 
+                        title="Удалить картинку"
+                        style="display: none"
+                    >&#10005;</button>
+                </figure>
+
+                <input 
+                    id="testwork_401_custom_product_image" 
+                    name="testwork_401_custom_product_image"
+                    type="file" 
+                    accept="image/*"
+                    class="short input"
+                    style="display:none"
+                    required
+                />
+            </div>
+
+            <div class="custom-item-field">
+                <label for="testwork_401_post_date">Дата создания</label>
+                <input 
+                    id="testwork_401_post_date" 
+                    name="testwork_401_post_date"
+                    type="datetime-local" 
+                    value="<?= stripslashes(date('Y-m-d\TH:i')) ?>" 
+                    class="datepicker short input"
+                />
+            </div>
+
+            <div class="custom-item-field">
+                <label for="testwork_401_product_type">Тип продукта</label>
+                <select 
+                    name="testwork_401_product_type" 
+                    id="testwork_401_product_type"
+                    class="short select"
+                >
+                    <option value="">Не выбран...</option>
+                    <option value="rare">Rare</option>
+                    <option value="frequent">Frequent</option>
+                    <option value="unusual">Unusual</option>
+                </select>
+            </div>
+
+            <div class="custom-item-field">
+                <label for="testwork_401_product_price">Цена товара</label>
+                <input 
+                    id="testwork_401_product_price" 
+                    name="testwork_401_product_price"
+                    type="number" 
+                    min="0" 
+                    step="0.01"
+                    value="0" 
+                />
+            </div>
+
+            <div class="custom-item-field">
+                <button type="button" id="clear_product_custom_fields_btn">&#10005; Очистить</button>
+                <button type="submit" id="create_product_custom_fields_btn">&#10003; Сохранить</button>
+            </div>
+        </div>
+    </form>
+    <?php
 }
