@@ -88,10 +88,14 @@
 .new-submit-button {
 	border: 0;
 	outline: 0;
-	padding: 0.65rem 1.5rem;
+	padding: 0.65rem 1.5rem !important;
 	margin: 0;
-	background-color: #218f4a;
+	background-color: #218f4a !important;
 	color: #fff;
+}
+
+button[type="submit"][name="save"]#publish {
+	width: 200px;
 }
 
 input[type="submit"][name="save"]#publish {
