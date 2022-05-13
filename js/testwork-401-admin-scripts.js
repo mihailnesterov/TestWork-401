@@ -4,16 +4,20 @@
     const form = document.querySelector('form#post');
     const image = document.querySelector('#custom_product_image');
     const inputFile = document.querySelector('#testwork_401_custom_product_image');
-    const uploadImageBtn = document.querySelector('#upload_custom_product_image');
-    const removeImageBtn = document.querySelector('#remove_custom_product_image');
 
     const productPrice = document.querySelector('#testwork_401_product_price');
     const wcRegularPrice = document.querySelector('#_regular_price');
+    const productTitle = document.querySelector('#testwork_401_product_title');
+    const productDate = document.querySelector('#testwork_401_post_date');
+    const productType = document.querySelector('#testwork_401_product_type');
+
     const clearFieldsBtn = document.querySelector('#clear_product_custom_fields_btn');
     const publishingAction = document.querySelector('#publishing-action');
-    const saveBtn = document.querySelector('input[type="submit"][name="save"]#publish' || 'button[type="submit"][name="save"]#publish');
 
-    const product_id = product.id;
+    const saveInput = document.querySelector('input[type="submit"][name="save"]#publish');
+    const saveBtn = document.querySelector('button[type="submit"][name="save"]#publish');
+    const uploadImageBtn = document.querySelector('#upload_custom_product_image');
+    const removeImageBtn = document.querySelector('#remove_custom_product_image');
 
     if( form ) {
         form.setAttribute("enctype", "multipart/form-data");
@@ -44,38 +48,6 @@
     }
 
     /**
-     * Сохранение товара
-     */
-    if( saveBtn ) {
-
-        /**
-         * Сохраняем товар ajax-запросом
-         */
-         saveBtn.addEventListener('click', () => {
-            
-            jQuery.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'save_new_product',
-                    product_id
-                },
-                success(res) {
-                    image.src = "";
-                    image.style.display = 'none';
-                    removeImageBtn.style.display = 'none';
-                    uploadImageBtn.style.display = 'block';
-                    alert('Товар добавлен');
-                },
-                error(error) {
-                    console.log(`Ajax error save new product: ${JSON.stringify(error)}`);
-                }
-            });
-            
-        });
-    }
-
-    /**
      * Удаление картинки
      */
      if( removeImageBtn ) {
@@ -94,7 +66,7 @@
                     type: 'POST',
                     data: {
                         action: 'remove_custom_image',
-                        product_id
+                        product_id: window.product.id
                     },
                     success(res) {
                         image.src = "";
@@ -114,7 +86,7 @@
     /**
      * Редактирование базовой цены товара
      */
-    if( productPrice ) {
+    if( productPrice && wcRegularPrice) {
         productPrice.addEventListener('input', e => wcRegularPrice.value = e.target.value);
     }
 
@@ -123,9 +95,6 @@
      */
     if( clearFieldsBtn ) {
         clearFieldsBtn.addEventListener('click', () => {
-            const productTitle = document.querySelector('#testwork_401_product_title');
-            const productDate = document.querySelector('#testwork_401_post_date');
-            const productType = document.querySelector('#testwork_401_product_type');
 
             if( productTitle ) {
                 productTitle.value = '';
@@ -157,9 +126,9 @@
     /**
      * Добавить свою кнопку submit (удалить основную)
      */
-    if( form && saveBtn ) {
+    if( form && saveInput ) {
         
-        //saveBtn.remove();
+        saveInput.remove();
         
         const newSubmitButton = document.createElement('button');
         
@@ -169,10 +138,7 @@
         
         publishingAction.appendChild(newSubmitButton);
         
-        form.addEventListener('submit', e => {
-            if( !publishingAction ) {
-                e.preventDefault();
-            }
+        form.addEventListener('submit', () => {
             const spinner = publishingAction.querySelector('.spinner');
             spinner.style.visibility = 'visible';
         });
