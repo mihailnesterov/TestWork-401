@@ -114,13 +114,24 @@ ul.products li:nth-child(1) img {
 
 ul.products li:nth-child(1) .price  {
     position: absolute;
-    top: 45%;
+    top: 42%;
     left: 0;
     right: 0;
     z-index: inherit;
     font-size: 42px !important;
     font-weight: 300;
     color: darkkhaki
+}
+
+ul.products li:nth-child(1) .onsale  {
+    position: absolute;
+    top: 52%;
+    left: 25%;
+    right: 25%;
+    z-index: inherit;
+    font-size: 18px !important;
+    background-color: darkkhaki;
+    padding: 1rem;
 }
 
 ul.product li .custom-type {
