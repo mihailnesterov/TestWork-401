@@ -131,3 +131,18 @@ input[type="submit"][name="save"]#publish {
 	margin: 15px 15px 15px 0;
 	padding: 15px;
 }
+
+.testwork-401-message {
+	background-color: #218f4a;
+	color: #f0f0f0;
+	margin: 15px 15px 15px 0;
+    padding: 15px;
+	width: 100%;
+}
+.testwork-401-message p {
+	font-size: 16px !important;
+}
+.testwork-401-message a {
+	margin-left: 1rem;
+	color: rgb(75, 190, 248);
+}
