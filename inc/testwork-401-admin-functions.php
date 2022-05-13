@@ -209,7 +209,7 @@ function change_product_field_product_type( $column, $postid ) {
 }
 
 /**
- * Добавить ссылку "Создать товар" в toolbar
+ * Добавить ссылку "Создать товар" в admin toolbar
  */
 add_action('admin_bar_menu', 'admin_add_toolbar_items', 98);
 function admin_add_toolbar_items( $admin_bar ) {
@@ -242,12 +242,12 @@ function add_admin_menu_page() {
 /**
  * Вывод формы на страницу товара
  */
-function render_admin_menu_page_html() {
+function render_admin_menu_page_html() { //edit.php?post_type=product
     if ( get_current_screen()->id !== 'product_page_testwork-401-create-product' ) return;
     ?>
-    <form name="post" action="edit.php?post_type=product" method="post" id="post" enctype="multipart/form-data">
+    <form name="post" action="" method="post" id="post" enctype="multipart/form-data">
         <div class="options_group testwork-401-fields">
-            <h1>TestWork 401 создать товар...</h1>
+            <h1>Создать товар...</h1>
             <hr />
             
             <div class="custom-item-field">
@@ -275,7 +275,6 @@ function render_admin_menu_page_html() {
                         id="upload_custom_product_image"
                         type="button" 
                         title="Загрузить картинку"
-                        style="display: block"
                     >&plus;</button>
 
                     <button 
@@ -293,7 +292,6 @@ function render_admin_menu_page_html() {
                     accept="image/*"
                     class="short input"
                     style="display:none"
-                    required
                 />
             </div>
 
@@ -309,7 +307,7 @@ function render_admin_menu_page_html() {
             </div>
 
             <div class="custom-item-field">
-                <label for="testwork_401_product_type">Тип продукта</label>
+                <label for="testwork_401_product_type">Тип</label>
                 <select 
                     name="testwork_401_product_type" 
                     id="testwork_401_product_type"
@@ -323,7 +321,7 @@ function render_admin_menu_page_html() {
             </div>
 
             <div class="custom-item-field">
-                <label for="testwork_401_product_price">Цена товара</label>
+                <label for="testwork_401_product_price">Цена</label>
                 <input 
                     id="testwork_401_product_price" 
                     name="testwork_401_product_price"
@@ -341,4 +339,70 @@ function render_admin_menu_page_html() {
         </div>
     </form>
     <?php
+
+    save_custom_product();
+}
+
+/**
+ * Сохранить товар
+ */
+function save_custom_product() {
+    
+    if ($_POST) {
+        $title = sanitize_text_field($_POST['testwork_401_product_title']);
+        $product_price = sanitize_text_field($_POST['testwork_401_product_price']);
+        $product_type = sanitize_text_field($_POST['testwork_401_product_type']);
+        $slug = transliterate($title);
+        $date = sanitize_text_field($_POST['testwork_401_post_date']);
+
+        $args = array(
+            'post_status' => "publish",
+            'post_type' => "product",
+            'post_title' => $title,
+            'post_name' => $slug,
+            'post_date' => $date,
+            'meta_input'  => array(
+                '_regular_price' => $product_price,
+                '_price' => $product_price,
+                'testwork_401_product_type' => $product_type
+            )
+        );
+
+        $product_id = wp_insert_post( wp_slash($args) );
+
+        if ( $product_id > 0 ) {
+            if(isset($_FILES)) {
+                
+                $upload = wp_handle_upload(
+                    $_FILES['testwork_401_custom_product_image'], 
+                    array('test_form' => FALSE)
+                );
+                
+                if($upload["url"]) {
+                    update_post_meta( 
+                        $product_id, 
+                        'testwork_401_custom_product_image', 
+                        esc_html($upload["url"])
+                    );
+                }
+            }
+
+            if( $_POST ): $_product = wc_get_product($product_id); ?>
+                <div class="testwork-401-message">
+                    <p>"<?= esc_html($_product->get_title()) ?>" создан! <a href="<?= get_edit_post_link($_product->get_id()) ?>">Редактировать</a></p>
+                </div>
+            <?php endif;
+        }        
+    }
+    
+}
+
+/**
+ * Russian (cyrillic) transliteration function
+ * @link https://gist.github.com/vindia/1476814
+ */
+function transliterate($string) {
+    $roman = array("Sch","sch",'Yo','Zh','Kh','Ts','Ch','Sh','Yu','ya','yo','zh','kh','ts','ch','sh','yu','ya','A','B','V','G','D','E','Z','I','Y','K','L','M','N','O','P','R','S','T','U','F','','Y','','E','a','b','v','g','d','e','z','i','y','k','l','m','n','o','p','r','s','t','u','f','','y','','e','_','_');
+    $cyrillic = array("Щ","щ",'Ё','Ж','Х','Ц','Ч','Ш','Ю','я','ё','ж','х','ц','ч','ш','ю','я','А','Б','В','Г','Д','Е','З','И','Й','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Ь','Ы','Ъ','Э','а','б','в','г','д','е','з','и','й','к','л','м','н','о','п','р','с','т','у','ф','ь','ы','ъ','э','-','.');
+    return strtolower(str_replace($cyrillic, $roman, $string));
 }
